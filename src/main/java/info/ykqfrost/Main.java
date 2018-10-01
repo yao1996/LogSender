@@ -3,46 +3,31 @@ package info.ykqfrost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.util.Random;
 
-/**
- * @author Yao Keqi
- * @date 2018/4/16
- */
-public class Main implements Runnable {
+public class Main {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
-    private static boolean flag = true;
-    private static int errorNum = 0;
-    private static int infoNum = 0;
-    private static int totalNum = 0;
 
     public static void main(String[] args) {
-        Runnable runnable = new Runnable() {
-            public void run() {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(new File("src/main/resources/test.txt")));
+            String s;
+            Random random = new Random();
+            int errorNum = 0;
+            while ((s = br.readLine()) != null) {
+                logger.info(s);
+                Thread.sleep(500);
+                if (random.nextInt(5) < 2) {
+                    errorNum++;
+                    logger.error(String.valueOf(errorNum));
+                    Thread.sleep(500);
                 }
-                Main.flag = false;
             }
-        };
-        new Thread(runnable).start();
-        new Thread(new Main()).start();
-    }
-
-    public void run() {
-        Random random = new Random();
-        while (flag) {
-            if (random.nextInt(5) < 2) {
-                logger.info(String.valueOf(infoNum));
-                infoNum++;
-            } else {
-                logger.error(String.valueOf(errorNum));
-                errorNum ++;
-            }
-            totalNum ++;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        logger.debug(String.valueOf(totalNum));
     }
 }
